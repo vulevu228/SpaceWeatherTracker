@@ -1,0 +1,25 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment folders (if you use virtualenv locally)
+venv/
+.venv/
+env/
+
+# VS Code & IDE settings
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Local-only run logs
+space_weather_tracker.log
+
+# Local Windows Task Scheduler helper - this is what actually runs the
+# pipeline (see README); kept out of the public repo since it's
+# machine-specific (hardcodes this machine's Python path, etc.)
+register-space-weather-task.ps1

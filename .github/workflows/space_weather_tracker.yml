@@ -1,0 +1,31 @@
+name: Space Weather Tracker
+
+# No scheduled trigger here on purpose. Collection for this project runs
+# locally (Task Scheduler -> space_weather_tracker.py -> a local PostgreSQL
+# instance, every 15 minutes - see README). GitHub's runners can't reach
+# 'localhost:5432' on this machine, so a cron trigger here would just fail
+# every run. Left as workflow_dispatch in case this ever points at a
+# reachable (cloud-hosted) Postgres instead - flip it back on then.
+on:
+  workflow_dispatch:
+
+jobs:
+  track-space-weather:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Space Weather Tracker
+        run: python space_weather_tracker.py
