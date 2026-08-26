@@ -2,6 +2,14 @@
 
 A small pipeline that quietly watches the sun, all day, every day, and turns real solar flare activity and geomagnetic storm data into a Power BI report you can actually make sense of at a glance.
 
+## Preview
+
+![Space weather tracker report in Power BI](space_weather_tracker_preview.png)
+
+Three cards up top give the headline numbers at a glance — max Kp-index in the window, total flares tracked, and how many GOES satellites are actively reporting. The gray panel on the left is a plain-language legend, spelling out what the Kp-index actually measures and what each flare class (B/C/M/X) means in practice, since those labels aren't self-explanatory.
+
+The middle chart is geomagnetic storm activity — Kp-index over time, with a red dashed line at Kp = 5 marking the official storm threshold, so any period where the line pokes above it is a real geomagnetic storm. To its right, a donut chart breaks the flare count down by severity (C-class dominates, as it almost always does — M and X are the rarer, more energetic events). Along the bottom, a table lists recent significant flare events (date, class, satellite, peak intensity) next to a scatter plot of every flare's peak intensity over time, colored by class, so you can see activity ramping up or quieting down across the rolling week.
+
 ## What this is, and why it exists
 
 This is the third sibling project in this series, after [`tracking_metals`](../tracking_metals) and [`earthquake_tracker`](../earthquake_tracker) — same basic idea, different signal. This one watches the sun and Earth's magnetic field: solar flares (classified C/M/X by intensity) and the planetary K-index (the standard 0-9 scale for geomagnetic storm severity), both sourced straight from NOAA's Space Weather Prediction Center, collected on autopilot in the background.
@@ -24,6 +32,7 @@ Every 15 minutes, a script on this machine hits two NOAA SWPC feeds, parses them
 | File | What it's for |
 |---|---|
 | `space_weather_tracker.py` | The whole pipeline: fetch both NOAA feeds, parse them, write to Postgres. This is what Task Scheduler runs every 15 minutes. |
+| `space_weather_tracker_visuals.pbix` | The Power BI report itself — Kp-index storm chart, flare severity donut, flare timeline scatter, summary cards, and a browsable events table, all reading live from the local Postgres database. |
 | `requirements.txt` | `requests` (call the NOAA feeds) and `psycopg2-binary` (talk to Postgres). |
 | `.github/workflows/space_weather_tracker.yml` | A GitHub Actions workflow that exists but is intentionally dormant — same reason as the other two projects: GitHub's cloud runners can't reach `localhost:5432` on this machine. |
 | `register-space-weather-task.ps1` | Sets up the Windows Scheduled Task that actually drives everything. Not tracked in this repo (machine-specific), described below so it can be recreated anywhere. |
@@ -57,14 +66,16 @@ Two tables in the local `space_weather_tracker` Postgres database:
 
 ## Power BI
 
-Not yet built — this is the next step. Planned visuals, mirroring `earthquake_tracker`'s single-page layout:
+`space_weather_tracker_visuals.pbix` is a single-page report — see the [Preview](#preview) section above for what it actually looks like. It's built from:
 
-- A **timeline/scatter of flares** (`begin_time` on the x-axis, flare class as color/severity, size by `max_ratio`) so you can see solar activity ramping up and down over the rolling week.
-- A **Kp-index line/area chart** over `time_tag`, with a reference line at Kp = 5 so a geomagnetic storm is visually obvious the moment the line crosses it.
-- Summary cards: current Kp, strongest flare in the window (by class), count of M/X-class flares.
-- A table for browsing individual flares, with a class-severity slicer.
+- A **Kp-index area chart** over `time_tag`, with a reference line at Kp = 5 so a geomagnetic storm is visually obvious the moment the line crosses it.
+- A **flare severity donut** breaking down the rolling window's flares by class (B/C/M/X).
+- A **flare intensity scatter** (`begin_time` on the x-axis, `max_ratio` on the y-axis, colored by class) so you can see solar activity ramping up and down over the week.
+- Summary cards: max Kp-index in the window, total flares tracked, active satellites.
+- A table of recent significant flare events, for browsing individual rows.
+- A plain-language legend explaining what Kp and each flare class actually mean, since those labels aren't self-explanatory to anyone who isn't already a space weather nerd.
 
-Both tables connect straight to the local Postgres database — open Power BI Desktop, Get Data → PostgreSQL database, server `localhost`, database `space_weather_tracker`, and pull in both `solar_flares` and `geomagnetic_kp`.
+**Getting the real, live data out of the `.pbix`:** the file in this repo is just the report *definition* — the charts, layout, and query logic — not a snapshot of data. It connects straight to a local Postgres database (`localhost`, database `space_weather_tracker`, tables `solar_flares` and `geomagnetic_kp`), so to see current numbers you need that database running on your own machine: follow "Setting this up somewhere else" below to get the pipeline collecting data, then open the `.pbix` in Power BI Desktop and hit **Refresh**. No `git pull` step is needed once it's set up — there's no committed data file standing between the source and the report, Power BI talks to the live database directly. If Power BI ever prompts for a login on refresh, use Power BI Desktop → File → Options and Settings → Data source settings to tell it to remember the Postgres credentials, so Refresh never stalls waiting on a prompt.
 
 ## Scheduling — where the automation actually lives
 
@@ -87,6 +98,6 @@ Same story as `earthquake_tracker`: `.github/workflows/space_weather_tracker.yml
 3. Set up `pgpass.conf` (`%APPDATA%\postgresql\pgpass.conf` on Windows) with the connection details.
 4. `pip install -r requirements.txt`.
 5. Run `register-space-weather-task.ps1` to register the Scheduled Task (defaults to every 15 minutes; pass `-IntervalMinutes` to change that).
-6. Build the `.pbix` in Power BI Desktop against the local Postgres instance (see "Power BI" above for the planned visuals).
+6. Open `space_weather_tracker_visuals.pbix` in Power BI Desktop, point its data source at your own Postgres instance, and refresh (see "Power BI" above for what's in it and how to access the live data).
 
 No API keys, no paid services, no cloud infrastructure — just NOAA's free feeds, a local database, and a scheduled task doing its thing quietly in the background.
