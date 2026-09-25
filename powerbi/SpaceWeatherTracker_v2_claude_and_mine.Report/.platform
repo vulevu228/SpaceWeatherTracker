@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "SpaceWeatherTracker_v2_claude_and_mine"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "2e3438b7-bb78-4353-95af-b6a4e2a4c0b3"
+  }
+}

@@ -1,0 +1,100 @@
+table 'Kp Index'
+	lineageTag: 244faab1-5868-5ef6-af61-d290466c4c54
+
+	column 'Period Start UTC'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: fea5b356-4fdd-5f6e-a687-fc0f18944a35
+		summarizeBy: none
+		sourceColumn: Period Start UTC
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 9b9ba71a-77d1-5651-ad7f-be10fb39f6f4
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'UTC Slot'
+		dataType: string
+		lineageTag: fb19be50-114c-5d88-8203-2a2039ef09c7
+		summarizeBy: none
+		sourceColumn: UTC Slot
+		sortByColumn: 'Slot Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slot Order'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6ea0f307-56a5-5be2-b826-27621d179e7f
+		summarizeBy: none
+		sourceColumn: Slot Order
+
+		annotation SummarizationSetBy = Automatic
+
+	column Kp
+		dataType: double
+		formatString: 0.00
+		lineageTag: a38da881-4803-59e7-a737-3fc3b086161b
+		summarizeBy: none
+		sourceColumn: Kp
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'A Index'
+		dataType: int64
+		formatString: 0
+		lineageTag: 764e4fc7-65d8-58f1-89b7-0d1400f4c448
+		summarizeBy: none
+		sourceColumn: A Index
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Stations Reporting'
+		dataType: int64
+		formatString: 0
+		lineageTag: 022f741f-7897-5376-a7d2-f4507ceb5775
+		summarizeBy: none
+		sourceColumn: Stations Reporting
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Storm Level'
+		dataType: string
+		lineageTag: 8d11312d-71fb-57aa-a84c-08631c960bbf
+		summarizeBy: none
+		sourceColumn: Storm Level
+		sortByColumn: 'Storm Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Storm Order'
+		dataType: int64
+		formatString: 0
+		lineageTag: 16c09109-39e3-5e5e-864f-2f5270781f3e
+		summarizeBy: none
+		sourceColumn: Storm Order
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Kp Index' = m
+		mode: import
+		source =
+				let
+				  Source = PostgreSQL.Database("localhost", "space_weather_tracker"),
+				  #"Navigation 1" = Source{[Schema = "public", Item = "kp_periods"]}[Data],
+				  #"Renamed Columns" = Table.RenameColumns(#"Navigation 1", {{"period_start_utc", "Period Start UTC"}, {"period_date", "Date"}, {"slot_utc", "UTC Slot"}, {"slot_order", "Slot Order"}, {"kp", "Kp"}, {"a_running", "A Index"}, {"station_count", "Stations Reporting"}, {"storm_level", "Storm Level"}, {"storm_order", "Storm Order"}}),
+				  #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns", {{"Period Start UTC", type datetime}, {"Date", type date}, {"UTC Slot", type text}, {"Slot Order", Int64.Type}, {"Kp", type number}, {"A Index", Int64.Type}, {"Stations Reporting", Int64.Type}, {"Storm Level", type text}, {"Storm Order", Int64.Type}})
+				in
+				  #"Changed Type"
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,123 @@
+table 'Solar Cycle'
+	lineageTag: bfec77e3-8cd6-5d15-b1e3-c509aa3b9714
+
+	column Month
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 02db3da7-eb4f-5f01-9575-376cefe074c9
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Cycle
+		dataType: int64
+		formatString: 0
+		lineageTag: 08770c3e-83c6-5cb1-86cb-333be787c75e
+		summarizeBy: none
+		sourceColumn: Cycle
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Sunspot Number'
+		dataType: double
+		formatString: 0.0
+		lineageTag: c728e935-e313-5248-9ea1-ff25c4148b77
+		summarizeBy: none
+		sourceColumn: Sunspot Number
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Smoothed Sunspot Number'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 876f5a7b-52dc-57e3-b67a-0423260d5520
+		summarizeBy: none
+		sourceColumn: Smoothed Sunspot Number
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Radio Flux F10.7'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 94a46c07-5cb8-52ea-ba08-a0418d93468d
+		summarizeBy: none
+		sourceColumn: Radio Flux F10.7
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Smoothed Radio Flux F10.7'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 5424c325-dc3f-57c4-b6f2-5978542b0be3
+		summarizeBy: none
+		sourceColumn: Smoothed Radio Flux F10.7
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Predicted Sunspot Number'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 823e6785-8839-59e0-9558-48fa61fb3fb2
+		summarizeBy: none
+		sourceColumn: Predicted Sunspot Number
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Predicted Sunspot Low'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 55665506-2bd7-55b6-90f5-0c28700d566a
+		summarizeBy: none
+		sourceColumn: Predicted Sunspot Low
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Predicted Sunspot High'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 8b3687ea-3546-5ecf-9c20-89cca5ce6245
+		summarizeBy: none
+		sourceColumn: Predicted Sunspot High
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Predicted Radio Flux F10.7'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 542eaca8-b77e-5ea9-823c-dc2441ae3437
+		summarizeBy: none
+		sourceColumn: Predicted Radio Flux F10.7
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Solar Cycle' = m
+		mode: import
+		source =
+				let
+				  Source = PostgreSQL.Database("localhost", "space_weather_tracker"),
+				  #"Navigation 1" = Source{[Schema = "public", Item = "solar_cycle"]}[Data],
+				  #"Renamed Columns" = Table.RenameColumns(#"Navigation 1", {{"month", "Month"}, {"cycle", "Cycle"}, {"ssn", "Sunspot Number"}, {"smoothed_ssn", "Smoothed Sunspot Number"}, {"f107", "Radio Flux F10.7"}, {"smoothed_f107", "Smoothed Radio Flux F10.7"}, {"predicted_ssn", "Predicted Sunspot Number"}, {"predicted_ssn_low", "Predicted Sunspot Low"}, {"predicted_ssn_high", "Predicted Sunspot High"}, {"predicted_f107", "Predicted Radio Flux F10.7"}}),
+				  #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns", {{"Month", type date}, {"Cycle", Int64.Type}, {"Sunspot Number", type number}, {"Smoothed Sunspot Number", type number}, {"Radio Flux F10.7", type number}, {"Smoothed Radio Flux F10.7", type number}, {"Predicted Sunspot Number", type number}, {"Predicted Sunspot Low", type number}, {"Predicted Sunspot High", type number}, {"Predicted Radio Flux F10.7", type number}})
+				in
+				  #"Changed Type"
+
+	annotation PBI_ResultType = Table

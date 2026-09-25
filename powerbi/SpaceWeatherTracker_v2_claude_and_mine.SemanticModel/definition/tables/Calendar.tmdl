@@ -1,0 +1,28 @@
+table Calendar
+	lineageTag: 8163129f-13db-5ebf-93a7-44ea052bcddf
+
+	column Date
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: ac981fc6-9334-5fd2-a1c8-57fb8a40767f
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Calendar = m
+		mode: import
+		source =
+				let
+				  // the tracker started collecting on 18 Aug 2026; runs up to today (UTC)
+				  StartDate = #date(2026, 8, 18),
+				  EndDate = Date.From(DateTimeZone.RemoveZone(DateTimeZone.UtcNow())),
+				  Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+				  #"To Table" = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}),
+				  #"Changed Type" = Table.TransformColumnTypes(#"To Table", {{"Date", type date}})
+				in
+				  #"Changed Type"
+
+	annotation PBI_ResultType = Table

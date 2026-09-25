@@ -1,0 +1,320 @@
+table _Measures
+	lineageTag: 95c0b923-ea01-577b-b2f8-ed37cd49a6d7
+
+	measure 'Flares' = COUNTROWS('Solar Flares') + 0
+		formatString: #,##0
+		displayFolder: 1 Flares
+		lineageTag: d46796d1-8ca7-594e-a311-7640dab56ff5
+
+	measure 'Days Covered' = DATEDIFF(MIN(Calendar[Date]), MAX(Calendar[Date]), DAY) + 1
+		formatString: 0
+		displayFolder: 1 Flares
+		lineageTag: 53eecd4e-3b5e-51d7-aa69-423a13f31bdd
+
+	measure 'Flares per Day' = DIVIDE([Flares], [Days Covered])
+		formatString: 0.0
+		displayFolder: 1 Flares
+		lineageTag: a31d6b0e-0c98-53ff-94d0-01faadd889b7
+
+	measure 'Flares per Day Last 7 Days' =
+			VAR E = MAX(Calendar[Date])
+			RETURN DIVIDE(CALCULATE([Flares], FILTER(ALL(Calendar[Date]), Calendar[Date] > E - 7 && Calendar[Date] <= E)), 7)
+		formatString: 0.0
+		displayFolder: 1 Flares
+		lineageTag: 86f14f76-d757-59b4-b85c-561098a400da
+
+	measure 'Flares Delta Text' =
+			VAR A = [Flares per Day]
+			VAR L = [Flares per Day Last 7 Days]
+			VAR D = DIVIDE(L - A, A)
+			RETURN IF(ISBLANK(A) || A = 0, "no flares in this range",
+			    FORMAT(A, "0.0") & " a day  |  last 7 days " & IF(D >= 0, "▲ ", "▼ ") & FORMAT(ABS(D), "0%"))
+		displayFolder: 1 Flares
+		lineageTag: 3fce5cae-c8be-5879-82e3-4f0bbc63307a
+
+	measure 'Strongest Flare' =
+			VAR T = TOPN(1, 'Solar Flares', 'Solar Flares'[Peak Flux], DESC)
+			RETURN IF(ISEMPTY('Solar Flares'), "none", MAXX(T, 'Solar Flares'[Peak Class]))
+		displayFolder: 1 Flares
+		lineageTag: f64fdf39-764a-5705-ad85-fd8c6525377b
+
+	measure 'Strongest Flare Delta Text' =
+			VAR T = TOPN(1, 'Solar Flares', 'Solar Flares'[Peak Flux], DESC)
+			RETURN IF(ISEMPTY('Solar Flares'), "no flares in this range",
+			    FORMAT(MAXX(T, 'Solar Flares'[Peak Time UTC]), "d mmm, hh:nn") & " UTC  |  " & MAXX(T, 'Solar Flares'[Radio Blackout]))
+		displayFolder: 1 Flares
+		lineageTag: b3ab438a-7292-5d5d-a356-185471529b0a
+
+	measure 'M Class or Stronger' = CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Class Rank] >= 4) + 0
+		formatString: #,##0
+		displayFolder: 1 Flares
+		lineageTag: b4b710df-e109-5da4-ae04-1ba74eb41718
+
+	measure 'Radio Blackout Flares' = CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Radio Blackout] <> "None") + 0
+		formatString: #,##0
+		displayFolder: 1 Flares
+		lineageTag: 316902df-3ef6-568d-9343-9fc4c82d9f2e
+
+	measure 'M Class Delta Text' =
+			IF([Flares] = 0, "no flares in this range",
+			    FORMAT(DIVIDE([M Class or Stronger], [Flares]), "0%") & " of all flares in the range")
+		displayFolder: 1 Flares
+		lineageTag: 74d25465-4a92-5307-aa3d-d478214ea914
+
+	measure 'Flare Strength' = MAX('Solar Flares'[Class Scale])
+		formatString: 0.00
+		displayFolder: 2 Chart measures
+		lineageTag: 7a7aae2e-3dca-50f5-bfd1-af809a866e19
+
+	measure 'Average Duration Minutes' = AVERAGE('Solar Flares'[Duration Minutes])
+		formatString: 0
+		displayFolder: 1 Flares
+		lineageTag: a7968677-f540-5b90-bdb7-c443d9ae4104
+
+	measure 'Top Flare Peak Flux' =
+			VAR V = MAX('Solar Flares'[Peak Flux])
+			RETURN IF(NOT ISBLANK(V) && RANKX(ALLSELECTED('Solar Flares'), CALCULATE(MAX('Solar Flares'[Peak Flux])), V, DESC, Dense) <= 12, V)
+		formatString: 0.00E+00
+		displayFolder: 2 Chart measures
+		lineageTag: 2d81108c-041d-50ca-8fa5-d12fabef3f60
+
+	measure 'Kp Periods' = COUNTROWS('Kp Index') + 0
+		formatString: #,##0
+		displayFolder: 3 Geomagnetic
+		lineageTag: eb6f216d-a438-5a94-87dd-b70c36882cfc
+
+	measure 'Max Kp' = MAX('Kp Index'[Kp])
+		formatString: 0.00
+		displayFolder: 3 Geomagnetic
+		lineageTag: d4f7550c-0ced-566f-9c5e-5ced16007996
+
+	measure 'Average Kp' = AVERAGE('Kp Index'[Kp])
+		formatString: 0.00
+		displayFolder: 3 Geomagnetic
+		lineageTag: 8c37395a-e120-5b11-8b7e-97a06f3d28c6
+
+	measure 'Latest Kp' =
+			VAR T = MAX('Kp Index'[Period Start UTC])
+			RETURN CALCULATE(MAX('Kp Index'[Kp]), 'Kp Index'[Period Start UTC] = T)
+		formatString: 0.00
+		displayFolder: 3 Geomagnetic
+		lineageTag: f85a90f6-896c-582a-a356-1fed28db3621
+
+	measure 'Kp Delta Text' =
+			VAR T = MAX('Kp Index'[Period Start UTC])
+			VAR Lvl = CALCULATE(MAX('Kp Index'[Storm Level]), 'Kp Index'[Period Start UTC] = T)
+			RETURN IF(ISBLANK(T), "no readings in this range",
+			    Lvl & "  |  " & FORMAT(T, "d mmm, hh:nn") & " UTC")
+		displayFolder: 3 Geomagnetic
+		lineageTag: d2021515-5c00-528f-afa2-169d0494ea5c
+
+	measure 'Storm Periods' = CALCULATE(COUNTROWS('Kp Index'), 'Kp Index'[Kp] >= 5) + 0
+		formatString: #,##0
+		displayFolder: 3 Geomagnetic
+		lineageTag: c566824e-93c2-5d26-abe5-d61bbc81d68d
+
+	measure 'Storm Delta Text' =
+			VAR T = TOPN(1, 'Kp Index', 'Kp Index'[Kp], DESC, 'Kp Index'[Period Start UTC], DESC)
+			RETURN IF(ISEMPTY('Kp Index'), "no readings in this range",
+			    "peak Kp " & FORMAT(MAXX(T, 'Kp Index'[Kp]), "0.00") & " on " & FORMAT(MAXX(T, 'Kp Index'[Period Start UTC]), "d mmm, hh:nn"))
+		displayFolder: 3 Geomagnetic
+		lineageTag: 79ddd066-435d-56a0-8c54-1af87fb063ee
+
+	measure 'Storm Days' = CALCULATE(DISTINCTCOUNT('Kp Index'[Date]), 'Kp Index'[Kp] >= 5) + 0
+		formatString: 0
+		displayFolder: 3 Geomagnetic
+		lineageTag: 196cd0fd-50e0-53ef-afd2-720055d9ae4c
+
+	measure 'Latest Sunspot Month' = CALCULATE(MAX('Solar Cycle'[Month]), NOT ISBLANK('Solar Cycle'[Sunspot Number]), ALL('Solar Cycle'))
+		formatString: mmm yyyy
+		displayFolder: 4 Solar cycle
+		lineageTag: 1ddd0599-53f8-5903-a774-c5126a75ae25
+
+	measure 'Latest Sunspot Number' =
+			VAR M = [Latest Sunspot Month]
+			RETURN CALCULATE(MAX('Solar Cycle'[Sunspot Number]), 'Solar Cycle'[Month] = M, ALL('Solar Cycle'))
+		formatString: 0
+		displayFolder: 4 Solar cycle
+		lineageTag: 1f3a4242-7018-5d70-9b95-83fd19979d72
+
+	measure 'Long Term Sunspot Average' = CALCULATE(AVERAGE('Solar Cycle'[Sunspot Number]), ALL('Solar Cycle'))
+		formatString: 0
+		displayFolder: 4 Solar cycle
+		lineageTag: 1babdc80-968b-5c08-86a4-485feddb3cff
+
+	measure 'Sunspot Delta Text' =
+			VAR L = [Latest Sunspot Number]
+			VAR A = [Long Term Sunspot Average]
+			VAR D = DIVIDE(L - A, A)
+			RETURN FORMAT([Latest Sunspot Month], "mmm yyyy") & "  |  " & IF(D >= 0, "▲ ", "▼ ") & FORMAT(ABS(D), "0%") & " vs avg " & FORMAT(A, "0")
+		displayFolder: 4 Solar cycle
+		lineageTag: 308d6046-66ae-53bc-a36b-b9ccaa6d6347
+
+	measure 'Cycle 25 Peak' = CALCULATE(MAX('Solar Cycle'[Smoothed Sunspot Number]), 'Solar Cycle'[Cycle] = 25, ALL('Solar Cycle'))
+		formatString: 0.0
+		displayFolder: 4 Solar cycle
+		lineageTag: d1ae1d80-3f59-50bc-b778-67fd8d7e75b6
+
+	measure 'Cycle 25 Peak Month' =
+			VAR P = [Cycle 25 Peak]
+			RETURN CALCULATE(MIN('Solar Cycle'[Month]), 'Solar Cycle'[Cycle] = 25, 'Solar Cycle'[Smoothed Sunspot Number] = P, ALL('Solar Cycle'))
+		formatString: mmm yyyy
+		displayFolder: 4 Solar cycle
+		lineageTag: 5a75c89f-3913-5074-9eee-8f1e4b9a1527
+
+	measure 'Average Cycle Peak' = AVERAGEX(FILTER(ALL('Solar Cycle'[Cycle]), 'Solar Cycle'[Cycle] >= 1 && 'Solar Cycle'[Cycle] <= 24), CALCULATE(MAX('Solar Cycle'[Smoothed Sunspot Number]), ALL('Solar Cycle'[Month])))
+		formatString: 0.0
+		displayFolder: 4 Solar cycle
+		lineageTag: b56a4034-7503-574a-8cfc-fee4abb08bb9
+
+	measure 'Cycle 25 Peak Delta Text' =
+			VAR D = DIVIDE([Cycle 25 Peak] - [Average Cycle Peak], [Average Cycle Peak])
+			RETURN FORMAT([Cycle 25 Peak Month], "mmm yyyy") & "  |  " & IF(D >= 0, "▲ ", "▼ ") & FORMAT(ABS(D), "0%") & " vs avg cycle"
+		displayFolder: 4 Solar cycle
+		lineageTag: 354aef8b-3700-5866-9c9e-24b3250c49c3
+
+	measure 'Cycle Peak' = IF(ISBLANK(SELECTEDVALUE('Solar Cycle'[Cycle])), BLANK(), MAX('Solar Cycle'[Smoothed Sunspot Number]))
+		formatString: 0
+		displayFolder: 4 Solar cycle
+		lineageTag: 81c77ad1-9d57-54d6-a120-369d12a48ba2
+
+	measure 'Strongest Cycle' =
+			VAR T = TOPN(1, FILTER(ALL('Solar Cycle'[Cycle]), NOT ISBLANK('Solar Cycle'[Cycle])), CALCULATE(MAX('Solar Cycle'[Smoothed Sunspot Number]), ALL('Solar Cycle'[Month])), DESC)
+			RETURN "Cycle " & MAXX(T, 'Solar Cycle'[Cycle])
+		displayFolder: 4 Solar cycle
+		lineageTag: 9b414ea9-dc88-543e-afac-bcc8f558fc64
+
+	measure 'Strongest Cycle Delta Text' =
+			VAR P = CALCULATE(MAX('Solar Cycle'[Smoothed Sunspot Number]), ALL('Solar Cycle'))
+			VAR Mo = CALCULATE(MIN('Solar Cycle'[Month]), 'Solar Cycle'[Smoothed Sunspot Number] = P, ALL('Solar Cycle'))
+			RETURN "smoothed peak " & FORMAT(P, "0") & " in " & FORMAT(Mo, "mmm yyyy")
+		displayFolder: 4 Solar cycle
+		lineageTag: b1f80edc-f945-57b4-ba4a-5704a73c4077
+
+	measure 'Latest Radio Flux' =
+			VAR M = CALCULATE(MAX('Solar Cycle'[Month]), NOT ISBLANK('Solar Cycle'[Radio Flux F10.7]), ALL('Solar Cycle'))
+			RETURN CALCULATE(MAX('Solar Cycle'[Radio Flux F10.7]), 'Solar Cycle'[Month] = M, ALL('Solar Cycle'))
+		formatString: 0
+		displayFolder: 4 Solar cycle
+		lineageTag: 83183cb5-06e2-5d2c-b01f-7c5ab40f3f3a
+
+	measure 'Radio Flux Delta Text' =
+			VAR A = CALCULATE(AVERAGE('Solar Cycle'[Radio Flux F10.7]), ALL('Solar Cycle'))
+			VAR D = DIVIDE([Latest Radio Flux] - A, A)
+			RETURN "solar flux units  |  " & IF(D >= 0, "▲ ", "▼ ") & FORMAT(ABS(D), "0%") & " vs avg " & FORMAT(A, "0")
+		displayFolder: 4 Solar cycle
+		lineageTag: 6860489a-2cf3-525c-88b7-86950628a4fb
+
+	measure 'Forecast End 2026' = CALCULATE(MAX('Solar Cycle'[Predicted Sunspot Number]), 'Solar Cycle'[Month] = DATE(2026, 12, 1), ALL('Solar Cycle'))
+		formatString: 0
+		displayFolder: 4 Solar cycle
+		lineageTag: bce34127-3cf8-5e65-996c-9a2514650f47
+
+	measure 'Forecast Delta Text' = "NOAA forecast, smoothed"
+		displayFolder: 4 Solar cycle
+		lineageTag: 967ab6b8-55c1-5e99-81b7-adea03911427
+
+	measure 'Flares per Day Delta Text' = "last 7 days: " & FORMAT([Flares per Day Last 7 Days], "0.0") & " a day"
+		displayFolder: 1 Flares
+		lineageTag: fb7336d7-6799-5523-b664-64a11412cf0f
+
+	measure 'Duration Delta Text' = "longest: " & FORMAT(MAX('Solar Flares'[Duration Minutes]), "0") & " minutes"
+		displayFolder: 1 Flares
+		lineageTag: 05cb7055-1784-5920-8b34-316bbc855c46
+
+	measure 'Radio Blackout Delta Text' = "R1 Minor " & (CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Radio Blackout] = "R1 Minor") + 0) & "  |  R2 or worse " & (CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Class Rank] >= 4, 'Solar Flares'[Radio Blackout] <> "R1 Minor") + 0)
+		displayFolder: 1 Flares
+		lineageTag: d4a75bca-bcc4-5563-826f-e9dce2c2dc1f
+
+	measure 'Average Kp Delta Text' = "0 to 3 is quiet, 5+ is a storm"
+		displayFolder: 3 Geomagnetic
+		lineageTag: e655ff6f-250b-568b-b5ed-21f58d21afe4
+
+	measure 'Storm Share Delta Text' = FORMAT(DIVIDE([Storm Periods], [Kp Periods]), "0.0%") & " of all 3-hour periods"
+		displayFolder: 3 Geomagnetic
+		lineageTag: a210c1f6-c5b7-59d7-8244-ce85c8036e88
+
+	measure 'Storm Days Delta Text' = "of " & DISTINCTCOUNT('Kp Index'[Date]) & " days with readings"
+		displayFolder: 3 Geomagnetic
+		lineageTag: 57ca046b-cc36-5ba5-a7a7-d7601f5eef98
+
+	measure 'Kp Periods Delta Text' = "from " & FORMAT(MIN('Kp Index'[Period Start UTC]), "d mmm") & " to " & FORMAT(MAX('Kp Index'[Period Start UTC]), "d mmm")
+		displayFolder: 3 Geomagnetic
+		lineageTag: 02077e86-8382-5dc3-a5d7-b47765867006
+
+	measure 'Average Cycle Delta Text' = "cycles 1 to 24, smoothed"
+		displayFolder: 4 Solar cycle
+		lineageTag: fe7866ee-8b92-5d8b-b3e9-95f65006b0dc
+
+	measure 'Monthly Sunspots' = SUM('Solar Cycle'[Sunspot Number])
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: 320fad6f-5fd1-5d02-a7fd-15eca03a55c9
+
+	measure 'Smoothed Sunspots' = SUM('Solar Cycle'[Smoothed Sunspot Number])
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: 77f5f37b-b76d-52fe-8d01-e262b01263c1
+
+	measure 'Cycle 25 Monthly' = IF(MIN('Solar Cycle'[Month]) >= DATE(2019, 1, 1), [Monthly Sunspots])
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: e97d6094-985f-543e-88ac-c3e4cf8a7f84
+
+	measure 'Cycle 25 Smoothed' = IF(MIN('Solar Cycle'[Month]) >= DATE(2019, 1, 1), [Smoothed Sunspots])
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: 7848a5a8-6724-5ae3-8e8f-afdd626b7b59
+
+	measure 'Cycle 25 Forecast' = IF(MIN('Solar Cycle'[Month]) >= DATE(2019, 1, 1), SUM('Solar Cycle'[Predicted Sunspot Number]))
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: 1d44cdcf-339d-5525-9041-03bb95b69536
+
+	measure 'Cycle 25 Forecast High' = IF(MIN('Solar Cycle'[Month]) >= DATE(2019, 1, 1), SUM('Solar Cycle'[Predicted Sunspot High]))
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: 3ae66dbd-a1e4-5e37-b66e-845930cd9bdb
+
+	measure 'Cycle 25 Forecast Low' = IF(MIN('Solar Cycle'[Month]) >= DATE(2019, 1, 1), SUM('Solar Cycle'[Predicted Sunspot Low]))
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: bdc69e32-f7d7-5f69-bf47-e5d242b8d7ad
+
+	measure 'Monthly Radio Flux' = SUM('Solar Cycle'[Radio Flux F10.7])
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: cde38e13-857b-5bf0-9125-cbf5bc8cfec3
+
+	measure 'Smoothed Radio Flux' = SUM('Solar Cycle'[Smoothed Radio Flux F10.7])
+		formatString: 0
+		displayFolder: 2 Chart measures
+		lineageTag: c3c8393f-efe4-50df-8b80-1b055d37fbd6
+
+	measure 'Data Window Text' =
+			VAR A = CALCULATE(MIN('Kp Index'[Period Start UTC]))
+			VAR B = CALCULATE(MAX('Kp Index'[Period Start UTC]))
+			RETURN "Showing " & FORMAT(A, "d mmm") & " to " & FORMAT(B, "d mmm yyyy") & "  |  latest Kp reading " & FORMAT(B, "hh:nn") & " UTC"
+		displayFolder: 5 Labels
+		lineageTag: 9fb14cd0-f3cf-55cf-a149-4bfde3756038
+
+	column Value
+		isHidden
+		dataType: int64
+		formatString: 0
+		lineageTag: e84e539b-44fe-5337-8af2-621962d799b5
+		summarizeBy: none
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				  Source = #table({"Value"}, {{0}}),
+				  #"Changed Type" = Table.TransformColumnTypes(Source, {{"Value", Int64.Type}})
+				in
+				  #"Changed Type"
+
+	annotation PBI_ResultType = Table

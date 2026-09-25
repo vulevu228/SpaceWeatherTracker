@@ -1,0 +1,7 @@
+relationship 6b570dea-4eba-528e-96ef-af028005f708
+	fromColumn: 'Solar Flares'.'Peak Date'
+	toColumn: Calendar.Date
+
+relationship 56358e1f-b56d-522c-ad0b-cf611fc7e462
+	fromColumn: 'Kp Index'.Date
+	toColumn: Calendar.Date

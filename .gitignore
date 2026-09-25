@@ -23,3 +23,7 @@ space_weather_tracker.log
 # pipeline (see README); kept out of the public repo since it's
 # machine-specific (hardcodes this machine's Python path, etc.)
 register-space-weather-task.ps1
+
+# Power BI Desktop local cache and per-user settings (regenerated on Refresh)
+**/.pbi/cache.abf
+**/.pbi/localSettings.json

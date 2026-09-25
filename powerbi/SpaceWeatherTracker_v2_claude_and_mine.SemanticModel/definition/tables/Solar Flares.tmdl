@@ -1,0 +1,188 @@
+table 'Solar Flares'
+	lineageTag: b49e743e-81ec-5312-ad89-f36e01eebb87
+
+	column 'Flare ID'
+		dataType: string
+		lineageTag: e23de92f-dd38-5f94-9a16-0129ce7fcd43
+		summarizeBy: none
+		sourceColumn: Flare ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start Time UTC'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: 756136c0-e92a-5957-a9ae-4fce49e5797f
+		summarizeBy: none
+		sourceColumn: Start Time UTC
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Peak Time UTC'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: a1e3ed89-7ff6-544a-b511-021ddf5a18c2
+		summarizeBy: none
+		sourceColumn: Peak Time UTC
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'End Time UTC'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: 0e269cc6-3fda-5e7b-ab78-b629b459efbb
+		summarizeBy: none
+		sourceColumn: End Time UTC
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Peak Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cda25364-d8f8-5cda-9adb-d64d51e8f04e
+		summarizeBy: none
+		sourceColumn: Peak Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Peak Hour UTC'
+		dataType: int64
+		formatString: 0
+		lineageTag: 06f9f602-e1b0-54a7-953d-beeae6a987a2
+		summarizeBy: none
+		sourceColumn: Peak Hour UTC
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start Class'
+		dataType: string
+		lineageTag: 7abc496c-e265-5c4e-80e7-e0602ce27308
+		summarizeBy: none
+		sourceColumn: Start Class
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Peak Class'
+		dataType: string
+		lineageTag: e4158697-993d-5047-97e7-55e3d5b618f4
+		summarizeBy: none
+		sourceColumn: Peak Class
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'End Class'
+		dataType: string
+		lineageTag: 9b5c6244-334d-539d-9722-a5490e87a4dd
+		summarizeBy: none
+		sourceColumn: End Class
+
+		annotation SummarizationSetBy = Automatic
+
+	column Class
+		dataType: string
+		lineageTag: ab9b3779-73e1-5415-881a-7f5f5144c297
+		summarizeBy: none
+		sourceColumn: Class
+		sortByColumn: 'Class Rank'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Class Rank'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9677a473-0bb0-5e45-ae25-6eab4dec97f5
+		summarizeBy: none
+		sourceColumn: Class Rank
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Peak Flux'
+		dataType: double
+		formatString: 0.00E+00
+		lineageTag: 21a22065-34de-555d-920c-1ea05200a05d
+		summarizeBy: none
+		sourceColumn: Peak Flux
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Class Scale'
+		dataType: double
+		formatString: 0.00
+		lineageTag: cb8ad996-7710-527e-a76d-b00ccafac43a
+		summarizeBy: none
+		sourceColumn: Class Scale
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Peak Ratio'
+		dataType: double
+		formatString: 0.000
+		lineageTag: 410639f0-f06e-586e-b842-ec53b090ca36
+		summarizeBy: none
+		sourceColumn: Peak Ratio
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Duration Minutes'
+		dataType: int64
+		formatString: 0
+		lineageTag: e0b0da70-57c8-5f92-a36b-97735618c271
+		summarizeBy: none
+		sourceColumn: Duration Minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Duration
+		dataType: string
+		lineageTag: 3bfd621c-6d19-519c-a2a6-b8c594d94428
+		summarizeBy: none
+		sourceColumn: Duration
+		sortByColumn: 'Duration Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Duration Order'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1a1b68a9-d709-5364-86cb-48bdf415ce1e
+		summarizeBy: none
+		sourceColumn: Duration Order
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Radio Blackout'
+		dataType: string
+		lineageTag: 29295106-33bc-57a1-a43b-743571bb8c5c
+		summarizeBy: none
+		sourceColumn: Radio Blackout
+
+		annotation SummarizationSetBy = Automatic
+
+	column Satellite
+		dataType: string
+		lineageTag: 6cb26d2a-9206-5bcd-a30d-91c1d4aa37c4
+		summarizeBy: none
+		sourceColumn: Satellite
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Solar Flares' = m
+		mode: import
+		source =
+				let
+				  Source = PostgreSQL.Database("localhost", "space_weather_tracker"),
+				  #"Navigation 1" = Source{[Schema = "public", Item = "flare_events"]}[Data],
+				  #"Renamed Columns" = Table.RenameColumns(#"Navigation 1", {{"flare_id", "Flare ID"}, {"begin_utc", "Start Time UTC"}, {"peak_utc", "Peak Time UTC"}, {"end_utc", "End Time UTC"}, {"peak_date", "Peak Date"}, {"peak_hour_utc", "Peak Hour UTC"}, {"begin_class", "Start Class"}, {"max_class", "Peak Class"}, {"end_class", "End Class"}, {"class_letter", "Class"}, {"class_rank", "Class Rank"}, {"peak_flux_wm2", "Peak Flux"}, {"class_scale", "Class Scale"}, {"max_ratio", "Peak Ratio"}, {"duration_min", "Duration Minutes"}, {"duration_band", "Duration"}, {"duration_order", "Duration Order"}, {"radio_blackout", "Radio Blackout"}, {"satellite", "Satellite"}}),
+				  #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns", {{"Flare ID", type text}, {"Start Time UTC", type datetime}, {"Peak Time UTC", type datetime}, {"End Time UTC", type datetime}, {"Peak Date", type date}, {"Peak Hour UTC", Int64.Type}, {"Start Class", type text}, {"Peak Class", type text}, {"End Class", type text}, {"Class", type text}, {"Class Rank", Int64.Type}, {"Peak Flux", type number}, {"Class Scale", type number}, {"Peak Ratio", type number}, {"Duration Minutes", Int64.Type}, {"Duration", type text}, {"Duration Order", Int64.Type}, {"Radio Blackout", type text}, {"Satellite", type text}})
+				in
+				  #"Changed Type"
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,139 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "Fluent2-CY26SU08",
+      "reportVersionAtImport": {
+        "visual": "2.12.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "Fluent2-CY26SU08",
+          "path": "BaseThemes/Fluent2-CY26SU08.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "bg_space4410.jpg",
+          "path": "bg_space4410.jpg",
+          "type": "Image"
+        },
+        {
+          "name": "hero_overview7301.png",
+          "path": "hero_overview7301.png",
+          "type": "Image"
+        },
+        {
+          "name": "hero_flares7302.png",
+          "path": "hero_flares7302.png",
+          "type": "Image"
+        },
+        {
+          "name": "hero_storms7303.png",
+          "path": "hero_storms7303.png",
+          "type": "Image"
+        },
+        {
+          "name": "hero_cycle7304.png",
+          "path": "hero_cycle7304.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_flare5501.png",
+          "path": "icon_flare5501.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_peak5502.png",
+          "path": "icon_peak5502.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_radio5503.png",
+          "path": "icon_radio5503.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_kp5504.png",
+          "path": "icon_kp5504.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_storm5505.png",
+          "path": "icon_storm5505.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_sunspot5506.png",
+          "path": "icon_sunspot5506.png",
+          "type": "Image"
+        },
+        {
+          "name": "strip_0_ffb547.png",
+          "path": "strip_0_ffb547.png",
+          "type": "Image"
+        },
+        {
+          "name": "strip_1_52c98a.png",
+          "path": "strip_1_52c98a.png",
+          "type": "Image"
+        },
+        {
+          "name": "strip_2_b79cff.png",
+          "path": "strip_2_b79cff.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true,
+    "useDefaultAggregateDisplayName": true
+  }
+}
