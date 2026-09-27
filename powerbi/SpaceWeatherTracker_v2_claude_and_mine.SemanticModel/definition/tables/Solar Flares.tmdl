@@ -186,3 +186,4 @@ table 'Solar Flares'
 				  #"Changed Type"
 
 	annotation PBI_ResultType = Table
+
