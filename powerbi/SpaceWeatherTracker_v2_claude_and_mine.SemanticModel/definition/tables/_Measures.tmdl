@@ -1,7 +1,7 @@
 table _Measures
 	lineageTag: 95c0b923-ea01-577b-b2f8-ed37cd49a6d7
 
-	measure 'Flares' = COUNTROWS('Solar Flares') + 0
+	measure Flares = COUNTROWS('Solar Flares') + 0
 		formatString: #,##0
 		displayFolder: 1 Flares
 		lineageTag: d46796d1-8ca7-594e-a311-7640dab56ff5
@@ -214,38 +214,6 @@ table _Measures
 		displayFolder: 4 Solar cycle
 		lineageTag: 967ab6b8-55c1-5e99-81b7-adea03911427
 
-	measure 'Flares per Day Delta Text' = "last 7 days: " & FORMAT([Flares per Day Last 7 Days], "0.0") & " a day"
-		displayFolder: 1 Flares
-		lineageTag: fb7336d7-6799-5523-b664-64a11412cf0f
-
-	measure 'Duration Delta Text' = "longest: " & FORMAT(MAX('Solar Flares'[Duration Minutes]), "0") & " minutes"
-		displayFolder: 1 Flares
-		lineageTag: 05cb7055-1784-5920-8b34-316bbc855c46
-
-	measure 'Radio Blackout Delta Text' = "R1 Minor " & (CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Radio Blackout] = "R1 Minor") + 0) & "  |  R2 or worse " & (CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Class Rank] >= 4, 'Solar Flares'[Radio Blackout] <> "R1 Minor") + 0)
-		displayFolder: 1 Flares
-		lineageTag: d4a75bca-bcc4-5563-826f-e9dce2c2dc1f
-
-	measure 'Average Kp Delta Text' = "0 to 3 is quiet, 5+ is a storm"
-		displayFolder: 3 Geomagnetic
-		lineageTag: e655ff6f-250b-568b-b5ed-21f58d21afe4
-
-	measure 'Storm Share Delta Text' = FORMAT(DIVIDE([Storm Periods], [Kp Periods]), "0.0%") & " of all 3-hour periods"
-		displayFolder: 3 Geomagnetic
-		lineageTag: a210c1f6-c5b7-59d7-8244-ce85c8036e88
-
-	measure 'Storm Days Delta Text' = "of " & DISTINCTCOUNT('Kp Index'[Date]) & " days with readings"
-		displayFolder: 3 Geomagnetic
-		lineageTag: 57ca046b-cc36-5ba5-a7a7-d7601f5eef98
-
-	measure 'Kp Periods Delta Text' = "from " & FORMAT(MIN('Kp Index'[Period Start UTC]), "d mmm") & " to " & FORMAT(MAX('Kp Index'[Period Start UTC]), "d mmm")
-		displayFolder: 3 Geomagnetic
-		lineageTag: 02077e86-8382-5dc3-a5d7-b47765867006
-
-	measure 'Average Cycle Delta Text' = "cycles 1 to 24, smoothed"
-		displayFolder: 4 Solar cycle
-		lineageTag: fe7866ee-8b92-5d8b-b3e9-95f65006b0dc
-
 	measure 'Monthly Sunspots' = SUM('Solar Cycle'[Sunspot Number])
 		formatString: 0
 		displayFolder: 2 Chart measures
@@ -298,9 +266,41 @@ table _Measures
 		displayFolder: 5 Labels
 		lineageTag: 9fb14cd0-f3cf-55cf-a149-4bfde3756038
 
+	measure 'Flares per Day Delta Text' = "last 7 days: " & FORMAT([Flares per Day Last 7 Days], "0.0") & " a day"
+		displayFolder: 1 Flares
+		lineageTag: fb7336d7-6799-5523-b664-64a11412cf0f
+
+	measure 'Duration Delta Text' = "longest: " & FORMAT(MAX('Solar Flares'[Duration Minutes]), "0") & " minutes"
+		displayFolder: 1 Flares
+		lineageTag: 05cb7055-1784-5920-8b34-316bbc855c46
+
+	measure 'Radio Blackout Delta Text' = "R1 Minor " & (CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Radio Blackout] = "R1 Minor") + 0) & "  |  R2 or worse " & (CALCULATE(COUNTROWS('Solar Flares'), 'Solar Flares'[Class Rank] >= 4, 'Solar Flares'[Radio Blackout] <> "R1 Minor") + 0)
+		displayFolder: 1 Flares
+		lineageTag: d4a75bca-bcc4-5563-826f-e9dce2c2dc1f
+
+	measure 'Average Kp Delta Text' = "0 to 3 is quiet, 5+ is a storm"
+		displayFolder: 3 Geomagnetic
+		lineageTag: e655ff6f-250b-568b-b5ed-21f58d21afe4
+
+	measure 'Storm Share Delta Text' = FORMAT(DIVIDE([Storm Periods], [Kp Periods]), "0.0%") & " of all 3-hour periods"
+		displayFolder: 3 Geomagnetic
+		lineageTag: a210c1f6-c5b7-59d7-8244-ce85c8036e88
+
+	measure 'Storm Days Delta Text' = "of " & DISTINCTCOUNT('Kp Index'[Date]) & " days with readings"
+		displayFolder: 3 Geomagnetic
+		lineageTag: 57ca046b-cc36-5ba5-a7a7-d7601f5eef98
+
+	measure 'Kp Periods Delta Text' = "from " & FORMAT(MIN('Kp Index'[Period Start UTC]), "d mmm") & " to " & FORMAT(MAX('Kp Index'[Period Start UTC]), "d mmm")
+		displayFolder: 3 Geomagnetic
+		lineageTag: 02077e86-8382-5dc3-a5d7-b47765867006
+
+	measure 'Average Cycle Delta Text' = "cycles 1 to 24, smoothed"
+		displayFolder: 4 Solar cycle
+		lineageTag: fe7866ee-8b92-5d8b-b3e9-95f65006b0dc
+
 	column Value
-		isHidden
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: e84e539b-44fe-5337-8af2-621962d799b5
 		summarizeBy: none
@@ -318,3 +318,4 @@ table _Measures
 				  #"Changed Type"
 
 	annotation PBI_ResultType = Table
+
