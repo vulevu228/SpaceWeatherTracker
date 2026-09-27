@@ -18,6 +18,8 @@ ref table 'Kp Index'
 ref table 'Solar Cycle'
 ref table Calendar
 ref table _Measures
+ref table DateTableTemplate_c070df37-96d3-4e91-ba9f-6965458ccb4d
+ref table LocalDateTable_f0aeed27-9488-4a3f-8bcc-52dd187cd075
 
 ref cultureInfo en-GB
 
