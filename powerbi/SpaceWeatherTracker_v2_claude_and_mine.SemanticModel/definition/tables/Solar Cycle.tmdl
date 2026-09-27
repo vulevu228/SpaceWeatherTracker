@@ -16,7 +16,7 @@ table 'Solar Cycle'
 		dataType: int64
 		formatString: 0
 		lineageTag: 08770c3e-83c6-5cb1-86cb-333be787c75e
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Cycle
 
 		annotation SummarizationSetBy = Automatic
@@ -25,7 +25,7 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: c728e935-e313-5248-9ea1-ff25c4148b77
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Sunspot Number
 
 		annotation SummarizationSetBy = Automatic
@@ -36,7 +36,7 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: 876f5a7b-52dc-57e3-b67a-0423260d5520
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Smoothed Sunspot Number
 
 		annotation SummarizationSetBy = Automatic
@@ -47,7 +47,7 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: 94a46c07-5cb8-52ea-ba08-a0418d93468d
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Radio Flux F10.7
 
 		annotation SummarizationSetBy = Automatic
@@ -58,7 +58,7 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: 5424c325-dc3f-57c4-b6f2-5978542b0be3
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Smoothed Radio Flux F10.7
 
 		annotation SummarizationSetBy = Automatic
@@ -69,7 +69,7 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: 823e6785-8839-59e0-9558-48fa61fb3fb2
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Predicted Sunspot Number
 
 		annotation SummarizationSetBy = Automatic
@@ -80,7 +80,7 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: 55665506-2bd7-55b6-90f5-0c28700d566a
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Predicted Sunspot Low
 
 		annotation SummarizationSetBy = Automatic
@@ -91,7 +91,7 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: 8b3687ea-3546-5ecf-9c20-89cca5ce6245
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Predicted Sunspot High
 
 		annotation SummarizationSetBy = Automatic
@@ -102,12 +102,26 @@ table 'Solar Cycle'
 		dataType: double
 		formatString: 0.0
 		lineageTag: 542eaca8-b77e-5ea9-823c-dc2441ae3437
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Predicted Radio Flux F10.7
 
 		annotation SummarizationSetBy = Automatic
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ingested_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: bef4376f-efff-46b5-8fb4-51e02e78e8f1
+		summarizeBy: none
+		sourceColumn: ingested_at
+
+		variation Variation
+			isDefault
+			relationship: 4a75229b-5e22-48ed-ad8b-5322dd808998
+			defaultHierarchy: LocalDateTable_f0aeed27-9488-4a3f-8bcc-52dd187cd075.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
 
 	partition 'Solar Cycle' = m
 		mode: import
@@ -121,3 +135,4 @@ table 'Solar Cycle'
 				  #"Changed Type"
 
 	annotation PBI_ResultType = Table
+
