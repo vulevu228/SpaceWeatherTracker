@@ -5,3 +5,9 @@ relationship 6b570dea-4eba-528e-96ef-af028005f708
 relationship 56358e1f-b56d-522c-ad0b-cf611fc7e462
 	fromColumn: 'Kp Index'.Date
 	toColumn: Calendar.Date
+
+relationship 4a75229b-5e22-48ed-ad8b-5322dd808998
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Solar Cycle'.ingested_at
+	toColumn: LocalDateTable_f0aeed27-9488-4a3f-8bcc-52dd187cd075.Date
+
