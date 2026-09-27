@@ -26,3 +26,4 @@ table Calendar
 				  #"Changed Type"
 
 	annotation PBI_ResultType = Table
+
